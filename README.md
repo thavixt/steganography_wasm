@@ -2,6 +2,6 @@
 
 Created with:
 
-- https://go.dev/wiki/WebAssembly
-- https://tailwindcss.com/docs/installation/using-vite
-- https://ui.shadcn.com/docs/installation/vite
+- [Go / WebAssembly](https://go.dev/wiki/WebAssembly)
+- [Vite / React / Typescript](https://tailwindcss.com/docs/installation/using-vite)
+- [shadcn](https://ui.shadcn.com/docs/installation/vite)
