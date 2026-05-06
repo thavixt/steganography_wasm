@@ -1,7 +1,7 @@
 import { Button } from "#components/ui/button";
 import { Toaster } from "#components/ui/sonner";
 import { Textarea } from "#components/ui/textarea";
-import { Analytics } from "@vercel/analytics/next";
+import { WasmStats } from "#components/wasm-stats";
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import heroImg from "./assets/hero.png";
@@ -9,36 +9,58 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "./assets/vite.svg";
 import { initWasm } from "./logic/initWasm";
 
+const WASM_STAT_UPDATE_INTERVAL_MS = 1000;
+
 function App() {
   const outputRef = useRef<HTMLTextAreaElement>(null);
   const [ready, setReady] = useState(false);
-  // TODO: display some stats of the running wasm process in a card on the UI
-  const wasm = useRef<WebAssembly.Exports | null>(null);
+  const wasmRuntime = useRef<WebAssembly.Exports | null>(null);
+  const [wasmStats, setWasmStats] = useState<WasmStats>({
+    stackPointer: 0,
+    memorySize: 0,
+  });
+
+  const updateWasmStats = () => {
+    if (wasmRuntime.current) {
+      const stats = {
+        stackPointer: (wasmRuntime.current.getsp as unknown as () => number)(),
+        memorySize: (wasmRuntime.current.mem as unknown as WebAssembly.Memory)
+          .buffer.byteLength,
+      };
+      setWasmStats(stats);
+    }
+  };
 
   useEffect(() => {
     if (ready) {
       return;
     }
     (async function init() {
-      wasm.current = await initWasm();
-      // console.log(wasm.current);
+      wasmRuntime.current = await initWasm();
       setReady(true);
+      updateWasmStats();
     })();
   }, [ready]);
 
-  const callWasm = () => {
+  useEffect(() => {
+    const timer = window.setInterval(
+      updateWasmStats,
+      WASM_STAT_UPDATE_INTERVAL_MS,
+    );
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const wasm_greet = () => {
     const result = window.greet("Peti");
-    console.log(result);
     if (outputRef.current) {
       outputRef.current.value = result;
     }
-    // console.log((window as any).wasm_result)
   };
 
   return (
     <main>
-      <Analytics />
       <Toaster />
+      <WasmStats stats={wasmStats} />
       <section id="center">
         <br />
         <div className="hero">
@@ -47,18 +69,24 @@ function App() {
           <img src={viteLogo} className="vite" alt="Vite logo" />
         </div>
         <div>
-          <h1>Get started</h1>
+          <h1>
+            WASM Steganography by{" "}
+            <a href="http://github.com/thavixt" target="_blank">
+              thavixt@github
+            </a>
+          </h1>
           <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+            Select an image file and <code>decode</code> it, or{" "}
+            <code>encode</code> some other data into it!
           </p>
         </div>
         <Button
           disabled={!ready}
           type="button"
           className="counter"
-          onClick={callWasm}
+          onClick={wasm_greet}
         >
-          Greet me from go Wasm
+          Greet me from go WASM!
         </Button>
         <Textarea ref={outputRef} placeholder="..." className="w-92 h-24" />
         <br />
