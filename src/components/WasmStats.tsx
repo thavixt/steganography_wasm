@@ -7,17 +7,18 @@ import { useWasm } from "../logic/hooks/useWasm";
 
 export function WasmStats() {
   const { ready, error, stats } = useWasm();
-  if (!ready) {
-    return null;
-  }
 
   return (
-    <div className="fixed top-0 left-0 m-4 p-1 bg-slate-600 rounded-md text-xs opacity-50 min-w-42 w-fit">
+    <div className="z-100 fixed bottom-0 left-0 m-4 p-2 flex flex-col gap-1 bg-gray-900 drop-shadow-lg drop-shadow-slate-800 rounded-md text-xs opacity-35 hover:opacity-100 min-w-42 w-fit">
       <b>WASM runtime</b>
       {error ? (
         <div>Instantiation failed.</div>
       ) : (
-        <div className="flex flex-col *:flex *:gap-4">
+        <div className="flex flex-col *:flex *:gap-4 *:justify-between">
+          <div>
+            <span>Initialized:</span>
+            <span>{ready.toString()}</span>
+          </div>
           <div>
             <span>Memory size:</span>
             <span>{stats.memorySize} bytes</span>

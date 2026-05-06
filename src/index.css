@@ -271,5 +271,5 @@ code {
 }
 
 a[href] {
-  @apply underline hover:no-underline text-purple-600 hover:text-purple-700 visited:text-purple-900;
+  @apply underline underline-offset-4 hover:no-underline text-purple-400;
 }
