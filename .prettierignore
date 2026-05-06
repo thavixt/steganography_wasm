@@ -1,0 +1,5 @@
+# Ignore artifacts:
+build
+dist
+coverage
+public/wasm_exec.js

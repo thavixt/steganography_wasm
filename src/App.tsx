@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
-import { initWasm } from './logic/initWasm'
-import { Toaster } from '#components/ui/sonner'
-import { Button } from '#components/ui/button'
-import { Textarea } from '#components/ui/textarea'
+import { Button } from "#components/ui/button";
+import { Toaster } from "#components/ui/sonner";
+import { Textarea } from "#components/ui/textarea";
+import { Analytics } from "@vercel/analytics/next";
+import { useEffect, useRef, useState } from "react";
+import "./App.css";
+import heroImg from "./assets/hero.png";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "./assets/vite.svg";
+import { initWasm } from "./logic/initWasm";
 
 function App() {
   const outputRef = useRef<HTMLTextAreaElement>(null);
@@ -32,10 +33,11 @@ function App() {
       outputRef.current.value = result;
     }
     // console.log((window as any).wasm_result)
-  }
+  };
 
   return (
     <main>
+      <Analytics />
       <Toaster />
       <section id="center">
         <br />
@@ -58,7 +60,7 @@ function App() {
         >
           Greet me from go Wasm
         </Button>
-        <Textarea ref={outputRef} placeholder='...' className='w-92 h-24' />
+        <Textarea ref={outputRef} placeholder="..." className="w-92 h-24" />
         <br />
       </section>
 
@@ -148,7 +150,7 @@ function App() {
       <div className="ticks"></div>
       <section id="spacer"></section>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;

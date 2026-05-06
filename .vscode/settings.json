@@ -1,0 +1,19 @@
+{
+  "gopls": {
+    "build.env": {
+      "GOOS": "js",
+      "GOARCH": "wasm"
+    }
+  },
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.addMissingImports.ts": "always",
+    "source.fixAll.eslint": "always",
+    "source.fixAll.prettier": "always",
+    "source.organizeImports": "always",
+    "source.removeUnused.ts": "always",
+    "source.fixAll.ts": "always",
+    "source.removeUnusedImports": "always",
+    "source.sortImports": "always"
+  }
+}
