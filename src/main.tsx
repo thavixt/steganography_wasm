@@ -8,6 +8,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { Toaster } from "sonner";
 import "./index.css";
 import { WasmProvider } from "./logic/context/WasmProvider.tsx";
+import { Decode } from "./routes/decode.tsx";
 import { Index } from "./routes/index.tsx";
 import { NotFound } from "./routes/notfound.tsx";
 
@@ -24,6 +25,7 @@ createRoot(document.getElementById("root")!).render(
           <section className="p-12">
             <Routes>
               <Route index element={<Index />} />
+              <Route path="/decode" element={<Decode />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </section>

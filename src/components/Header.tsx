@@ -5,7 +5,7 @@ import GlitchVault from "./ui/glitchvault";
 export function Header() {
   const navigate = useNavigate();
   return (
-    <header className="sticky top-0 h-fit w-full border-b pb-2 bg-black">
+    <header className="sticky top-0 h-fit w-full border-b bg-black">
       <GlitchVault
         className="w-full h-full relative z-10"
         glitchColor="#0AF0F0"

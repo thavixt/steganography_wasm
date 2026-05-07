@@ -2,7 +2,7 @@ import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { initWasm } from "../initWasm";
 import { WasmContext } from "./WasmContext";
 
-const WASM_STAT_UPDATE_INTERVAL_MS = 1000;
+export const WASM_STAT_UPDATE_INTERVAL_MS = 5000;
 
 /**
  * Some stats about the active WASM instance
