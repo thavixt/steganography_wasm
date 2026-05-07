@@ -5,16 +5,16 @@ import GlitchVault from "./ui/glitchvault";
 export function Header() {
   const navigate = useNavigate();
   return (
-    <header className="sticky top-0 h-fit w-full border-b bg-black">
+    <header className="sticky top-0 h-fit w-full border-b-4 border-red-600 bg-black text-slate-200">
       <GlitchVault
         className="w-full h-full relative z-10"
-        glitchColor="#0AF0F0"
+        glitchColor="#40857e"
         glitchRadius={120}
       >
-        <div className="flex flex-col p-4 md:flex-row md:p-0 gap-2  items-center justify-center">
+        <div className="flex flex-col p-2 md:flex-row gap-2 items-center justify-center">
           <img
             onClick={() => navigate("/")}
-            className="size-12 cursor-pointer transition hover:scale-125"
+            className="size-8 cursor-pointer transition hover:scale-125"
             src={heroImage}
             alt="Steganography illustration"
           />
@@ -24,7 +24,7 @@ export function Header() {
             <a
               href="http://github.com/thavixt"
               target="_blank"
-              className="bg-black p-1"
+              className="hover:bg-black p-1"
             >
               thavixt
             </a>

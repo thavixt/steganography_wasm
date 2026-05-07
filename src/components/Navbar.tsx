@@ -2,12 +2,14 @@ import { Link } from "react-router";
 
 export function Navbar() {
   return (
-    <nav className="w-full h-fit flex flex-col md:flex-row gap-2 p-4 md:py-2 md:px-12 justify-between items-center border-b-2">
-      <Link to="/">Home</Link>
-      <Link to="/decode">Decode</Link>
-      <Link to="/encode">Encode</Link>
-      <Link to="/compare">Compare</Link>
-      <Link to="/info">Info</Link>
+    <nav className="w-full h-fit p-4 md:pt-2 md:px-12 justify-between items-center border-b">
+      <div className="flex flex-col md:flex-row gap-8 items-center justify-center text-sm">
+        <Link to="/">/home</Link>
+        <Link to="/decode">/decode</Link>
+        <Link to="/encode">/encode</Link>
+        <Link to="/compare">/compare</Link>
+        <Link to="/info">/info</Link>
+      </div>
     </nav>
   );
 }

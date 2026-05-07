@@ -15,7 +15,7 @@ import { NotFound } from "./routes/notfound.tsx";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Analytics />
-    <Toaster />
+    <Toaster position="bottom-center" />
     <WasmProvider>
       <WasmStats />
       <BrowserRouter>
