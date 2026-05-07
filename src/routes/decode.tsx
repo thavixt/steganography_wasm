@@ -10,8 +10,8 @@ import { useWasm } from "../logic/hooks/useWasm";
 export function Decode() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageBuffer = useRef<ArrayBuffer>(null);
+  const outputRef = useRef<HTMLTextAreaElement>(null);
   const wasm = useWasm();
-  console.log(wasm.ready);
 
   const onImageInput: React.ReactEventHandler<HTMLInputElement> = (e) => {
     const file = e.currentTarget.files?.[0];
@@ -59,12 +59,19 @@ export function Decode() {
     reader.readAsDataURL(file);
   };
 
-  const onDecode = () => {
-    console.log("onDecode");
+  const wasm_decode = () => {
     if (!imageBuffer.current) {
       toast.warning("Load an image to the canvas to decode.");
       return;
     }
+    const result = window.decode(new Uint8Array(imageBuffer.current));
+    console.log(result, typeof result);
+    toast.success("Text decoded from image data.");
+    if (!outputRef.current) {
+      toast.error("Output text area not found.");
+      return;
+    }
+    outputRef.current.value = result;
   };
 
   return (
@@ -92,11 +99,15 @@ export function Decode() {
           </CardContent>
         </Card>
         <div className="flex flex-col gap-2 items-start">
-          <Button variant="secondary" onClick={onDecode}>
+          <Button
+            disabled={!wasm.ready}
+            variant="secondary"
+            onClick={wasm_decode}
+          >
             Decode image
           </Button>
           <Label>Decoded text content:</Label>
-          <Textarea placeholder="..." className="w-92 h-92" />
+          <Textarea ref={outputRef} placeholder="..." className="w-92 h-92" />
         </div>
       </div>
     </div>
