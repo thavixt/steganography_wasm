@@ -18,7 +18,7 @@
   "author": "thavixt",
   "scripts": {
     "be:build": "docker compose up -d server --build",
-    "be:dev": "docker compose --profile stego_backend up -w",
+    "be:dev": "docker compose --profile stego_backend up -d",
     "build": "docker compose up --profile app --build",
     "db:build": "docker compose up -d postgres --build",
     "db:stop": "docker compose stop postgres",
