@@ -13,5 +13,20 @@ export interface PublicKeyCredentialArgs {
     timeout: number;
     challenge: string;
     excludeCredentials: PublicKeyCredentialDescriptor[];
-  }
+  };
 }
+
+export type StegoMethodType = "decode-image" | "encode-image";
+
+export interface StegoImagePayloadData {
+  buffer: ArrayBuffer;
+  width: number;
+  height: number;
+  decodeType: "text" | "image";
+}
+export type StegoImagePayloadDataToWASM = [
+  ArrayBuffer,
+  number,
+  number,
+  "text" | "image",
+];

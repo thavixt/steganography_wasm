@@ -5,17 +5,27 @@ import { Label } from "#components/ui/label";
 import { Progress } from "#components/ui/progress";
 import { Textarea } from "#components/ui/textarea";
 import { cn } from "#lib/utils";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useWasm } from "../logic/hooks/useWasm";
+import type { StegoImagePayloadData } from "../types";
 
 export function Decode() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imageBuffer = useRef<ArrayBuffer>(null);
+  const imageData = useRef<StegoImagePayloadData | null>(null);
   const outputRef = useRef<HTMLTextAreaElement>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [decodeType, setDecodeType] = useState<"text" | "image">("text");
+  const [decodedImageUrl, setDecodedImageUrl] = useState<string | null>(null);
   const wasm = useWasm();
+
+  // Cleanup decoded image URL when component unmounts or URL changes
+  useEffect(() => {
+    return () => {
+      if (decodedImageUrl) URL.revokeObjectURL(decodedImageUrl);
+    };
+  }, [decodedImageUrl]);
 
   const onImageInput: React.ReactEventHandler<HTMLInputElement> = (e) => {
     const file = e.currentTarget.files?.[0];
@@ -47,13 +57,14 @@ export function Decode() {
           ctx.drawImage(img, 0, 0);
 
           // Extract raw pixel data from canvas
-          const imageData = ctx.getImageData(0, 0, img.width, img.height);
-          imageBuffer.current = imageData.data.buffer;
-          console.log(
-            "Pixel data length:",
-            imageBuffer.current.byteLength,
-            imageBuffer.current,
-          );
+          const imgData = ctx.getImageData(0, 0, img.width, img.height);
+          imageData.current = {
+            buffer: imgData.data.buffer,
+            width: imgData.width,
+            height: imgData.height,
+            decodeType,
+          };
+          console.log("[js] image data", imageData.current);
         }
         toast.success("Image file loaded.");
       };
@@ -66,18 +77,12 @@ export function Decode() {
     try {
       setLoading(true);
       setProgress(0);
-      if (!imageBuffer.current) {
+      if (!imageData.current) {
         throw new Error("Load an image to the canvas to decode.");
       }
-      if (!outputRef.current) {
-        throw new Error("Output text area not found.");
-      }
 
-      const buffer = imageBuffer.current;
-
-      console.debug("start decoding");
       const decodingTask = () => {
-        return new Promise<string>((resolve, reject) => {
+        return new Promise<string | ArrayBuffer>((resolve, reject) => {
           const worker = new Worker(
             new URL("../../wasm/wasm.worker.ts", import.meta.url),
             { type: "module" },
@@ -86,7 +91,6 @@ export function Decode() {
           worker.onmessage = (event) => {
             const { type, payload } = event.data;
             if (type === "progress") {
-              console.debug("progress", payload);
               setProgress(Math.round(payload));
             }
             if (type === "success") {
@@ -104,17 +108,42 @@ export function Decode() {
             worker.terminate();
           };
 
-          worker.postMessage({ type: "decode", payload: { buffer } });
+          if (!imageData.current) {
+            throw new Error("Image to decode not found");
+          }
+          const buffer = imageData.current.buffer;
+          const width = imageData.current.width;
+          const height = imageData.current.height;
+          const payload: StegoImagePayloadData = {
+            buffer,
+            width,
+            height,
+            decodeType,
+          };
+          console.debug("[js] start decoding", payload);
+          worker.postMessage({
+            type: "decode-image",
+            payload,
+          });
         });
       };
       const promise = toast.promise(decodingTask(), {
-        success: "Text successfully decoded from image.",
+        success: `${decodeType === "text" ? "Text" : "Image"} successfully decoded from image.`,
         loading: "Decoding image...",
       });
       const result = await promise.unwrap();
-      console.debug("finished", result);
+      console.debug("[js] decode finished", { result, typeof: typeof result });
 
-      outputRef.current.value = result;
+      if (decodeType === "text") {
+        if (outputRef.current) {
+          outputRef.current.value = result as string;
+        }
+        setDecodedImageUrl(null);
+      } else {
+        const blob = new Blob([result as ArrayBuffer], { type: "image/png" });
+        const url = URL.createObjectURL(blob);
+        setDecodedImageUrl(url);
+      }
     } catch (e) {
       const error = e as Error;
       toast.error(error.message);
@@ -164,17 +193,65 @@ export function Decode() {
         <Card className="bg-gray-400">
           <CardContent>
             <div className="flex flex-col gap-4 items-start">
-              <Button
-                loading={loading}
-                disabled={!wasm.ready}
-                variant="outline"
-                onClick={wasm_decode}
-              >
-                Decode image
-              </Button>
+              <div className="flex gap-4 items-center">
+                <Button
+                  loading={loading}
+                  disabled={!wasm.ready}
+                  variant="outline"
+                  onClick={wasm_decode}
+                >
+                  Decode image
+                </Button>
+                <div className="flex gap-2 bg-slate-200/50 p-1 rounded-md">
+                  <Label>Output to:</Label>
+                  <div className="flex gap-1">
+                    <Button
+                      variant={decodeType === "text" ? "secondary" : "ghost"}
+                      size="sm"
+                      className="h-7 px-2"
+                      onClick={() => setDecodeType("text")}
+                    >
+                      Text
+                    </Button>
+                    <Button
+                      variant={decodeType === "image" ? "secondary" : "ghost"}
+                      size="sm"
+                      className="h-7 px-2"
+                      onClick={() => setDecodeType("image")}
+                    >
+                      Image
+                    </Button>
+                  </div>
+                </div>
+              </div>
               <div className="flex flex-col gap-2">
-                <Label>Decoded text content:</Label>
-                <Textarea readOnly ref={outputRef} className="w-82 h-80" />
+                <Label>
+                  {decodeType === "text"
+                    ? "Decoded text content:"
+                    : "Decoded image:"}
+                </Label>
+                {decodeType === "text" ? (
+                  <Textarea
+                    readOnly
+                    ref={outputRef}
+                    className="w-80 h-80 bg-gray-300 border-0 shadow-md"
+                  />
+                ) : (
+                  <div className="p-2 bg-gray-300 border border-gray-400 shadow-md rounded-md size-80 flex items-center justify-center overflow-hidden">
+                    {decodedImageUrl ? (
+                      <img
+                        src={decodedImageUrl}
+                        alt="Decoded"
+                        className="max-h-full max-w-full object-contain"
+                        style={{ imageRendering: "pixelated" }}
+                      />
+                    ) : (
+                      <span className="text-gray-500 italic text-sm">
+                        No image decoded yet
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>

@@ -8,9 +8,12 @@ export interface IGolang {
   callWasm: () => void;
   greet: (name: string) => string;
   decode: (
-    buffer: Uint8Array<ArrayBuffer>,
     onProgress: (percent: number) => void,
-  ) => Promise<string>;
+    buffer: ArrayBuffer,
+    width: number,
+    height: number,
+    type: "text" | "image",
+  ) => Promise<string | ArrayBuffer>;
 }
 
 declare class Go {
