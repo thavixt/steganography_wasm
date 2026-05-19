@@ -50,6 +50,7 @@ When the containers are running, you can access them at:
 
 - [Yotube: Secrets Hidden in Images (Steganography) - Computerphile](https://www.youtube.com/watch?v=TWEXCYQKyDc)
 - [Youtube: How Passkeys Work - Computerphile](https://youtube.com/watch?v=lypcC79k-gg)
+- [Implementing Passkeys in Practice - Computerphile](https://www.youtube.com/watch?v=lypcC79k-gg)
 - [Package: lbuchs / WebAuthn](https://github.com/lbuchs/WebAuthn)
 - [MDN docs: Web / API / Credential](https://developer.mozilla.org/en-US/docs/Web/API/Credential)
 - [MDC docs: WebAuth](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API#examples)
