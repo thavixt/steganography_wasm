@@ -21,38 +21,28 @@ onmessage = async (event: MessageEvent) => {
   const type = event.data.type as StegoMethodType;
   const payload = event.data.payload as StegoImagePayloadData;
 
-  console.debug("[worker] onmessage", event.data.payload);
-
   try {
     if (type === "decode-image") {
       const result = self.decode(
-        (p: number) => {
-          postMessage({ type: "progress", payload: p });
+        (percent: number) => {
+          postMessage({ type: "progress", payload: percent });
         },
         payload.buffer,
         payload.width,
         payload.height,
         payload.decodeType,
       );
-      console.log(
-        "[worker] decode result",
-        {
-          width: payload.width,
-          height: payload.height,
-          typeof: typeof result,
-        },
-        result,
-      );
 
+      console.log("input", lengthOf(payload.buffer));
       // If the Go WASM module returned a Uint8Array (the PNG file bytes),
       // we extract the buffer to pass it to the main thread as an ArrayBuffer.
       const isImage =
         payload.decodeType === "image" && result instanceof Uint8Array;
       const finalPayload = isImage ? result.buffer : result;
       const transfer = isImage ? [finalPayload as ArrayBuffer] : [];
+      console.log("output", lengthOf(result));
 
-      // postMessage({ type: "success", payload: finalPayload }, "*", transfer);
-      // @ts-expect-error is this signature right??
+      // @ts-expect-error this function signature is wrong?!
       postMessage({ type: "success", payload: finalPayload }, transfer);
     } else if (type === "encode-image") {
       throw new Error(`WIP - not yet implemented method type "${type}"`);
@@ -65,4 +55,11 @@ onmessage = async (event: MessageEvent) => {
       payload: err instanceof Error ? err.message : String(err),
     });
   }
+};
+
+const lengthOf = (value: string | ArrayBuffer): number => {
+  if (typeof value === "string") {
+    return value.length;
+  }
+  return value.byteLength;
 };

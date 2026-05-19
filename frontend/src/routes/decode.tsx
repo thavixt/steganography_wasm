@@ -5,7 +5,7 @@ import { Label } from "#components/ui/label";
 import { Progress } from "#components/ui/progress";
 import { Textarea } from "#components/ui/textarea";
 import { cn } from "#lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { toast } from "sonner";
 import { useWasm } from "../logic/hooks/useWasm";
 import type { StegoImagePayloadData } from "../types";
@@ -27,7 +27,7 @@ export function Decode() {
     };
   }, [decodedImageUrl]);
 
-  const onImageInput: React.ReactEventHandler<HTMLInputElement> = (e) => {
+  const onImageInput = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files?.[0];
     if (!file) {
       toast.error("Invalid or empty file selection.");
@@ -64,7 +64,6 @@ export function Decode() {
             height: imgData.height,
             decodeType,
           };
-          console.log("[js] image data", imageData.current);
         }
         toast.success("Image file loaded.");
       };
@@ -120,19 +119,18 @@ export function Decode() {
             height,
             decodeType,
           };
-          console.debug("[js] start decoding", payload);
           worker.postMessage({
             type: "decode-image",
             payload,
           });
         });
       };
+
       const promise = toast.promise(decodingTask(), {
         success: `${decodeType === "text" ? "Text" : "Image"} successfully decoded from image.`,
         loading: "Decoding image...",
       });
       const result = await promise.unwrap();
-      console.debug("[js] decode finished", { result, typeof: typeof result });
 
       if (decodeType === "text") {
         if (outputRef.current) {
@@ -242,7 +240,7 @@ export function Decode() {
                       <img
                         src={decodedImageUrl}
                         alt="Decoded"
-                        className="max-h-full max-w-full object-contain"
+                        className="w-full h-full object-contain"
                         style={{ imageRendering: "pixelated" }}
                       />
                     ) : (

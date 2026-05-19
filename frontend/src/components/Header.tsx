@@ -17,7 +17,7 @@ export function Header() {
         glitchColor="#40857e"
         glitchRadius={120}
       >
-        <div className="flex flex-col xl:flex-row items-center justify-center xl:gap-24 pb-2">
+        <div className="flex flex-col lg:flex-row items-center justify-between pb-2 px-4">
           <div className="flex flex-col p-2 md:flex-row gap-2 items-center justify-center">
             <img
               onClick={() => navigate("/")}

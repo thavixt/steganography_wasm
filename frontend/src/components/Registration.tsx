@@ -17,7 +17,6 @@ export function Registration() {
   const { register, handleSubmit, formState } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     setLoading(true);
-    console.log(data);
     await registerAccount({
       displayName: data.username,
       id: crypto.randomUUID(),

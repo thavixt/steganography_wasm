@@ -1,11 +1,11 @@
 "use client";
-import React, { useRef, useEffect, useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 
 // Type declarations for OffscreenCanvas (may not be available in all environments)
 declare global {
   interface Window {
     OffscreenCanvas?: {
-      new (width: number, height: number): OffscreenCanvas;
+      new(width: number, height: number): OffscreenCanvas;
     };
   }
 }
@@ -15,7 +15,7 @@ interface OffscreenCanvas {
   height: number;
   getContext(
     contextId: "2d",
-    options?: CanvasRenderingContext2DSettings
+    options?: CanvasRenderingContext2DSettings,
   ): OffscreenCanvasRenderingContext2D | null;
 }
 
@@ -29,7 +29,7 @@ interface OffscreenCanvasRenderingContext2D {
     r0: number,
     x1: number,
     y1: number,
-    r1: number
+    r1: number,
   ): CanvasGradient;
   font: string;
   textBaseline: CanvasTextBaseline;
@@ -91,15 +91,15 @@ function hexToRgb(hex: string): HexColor | null {
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   hex = hex.replace(
     shorthandRegex,
-    (_: string, r: string, g: string, b: string) => r + r + g + g + b + b
+    (_: string, r: string, g: string, b: string) => r + r + g + g + b + b,
   );
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16),
+    }
     : null;
 }
 
@@ -178,7 +178,6 @@ class ParticlePool {
       this.activeParticles.add(particle);
       return particle;
     }
-    // console.warn("Particle pool depleted.");
     return null;
   }
 
@@ -214,7 +213,7 @@ class RenderingEngine {
     if (typeof window !== "undefined" && window.OffscreenCanvas) {
       this.offscreenCanvas = new window.OffscreenCanvas(
         this.ctx.canvas.width,
-        this.ctx.canvas.height
+        this.ctx.canvas.height,
       );
       this.offscreenCtx = this.offscreenCanvas.getContext("2d", {
         alpha: true,
@@ -231,7 +230,7 @@ class RenderingEngine {
   render(
     particles: Particle[],
     glitchColor: string,
-    forceRender = false
+    forceRender = false,
   ): void {
     const now = performance.now();
     if (!forceRender && now - this.lastRenderTime < this.renderThrottle) {
@@ -267,20 +266,20 @@ class RenderingEngine {
           0,
           particle.x + CHAR_WIDTH / 2,
           particle.y + CHAR_HEIGHT / 2,
-          CHAR_WIDTH * 1.5
+          CHAR_WIDTH * 1.5,
         );
 
         gradient.addColorStop(
           0,
-          `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 1)`
+          `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 1)`,
         );
         gradient.addColorStop(
           0.5,
-          `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.5)`
+          `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0.5)`,
         );
         gradient.addColorStop(
           1,
-          `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0)`
+          `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0)`,
         );
 
         renderCtx.fillStyle = gradient;
@@ -293,7 +292,7 @@ class RenderingEngine {
       this.ctx.drawImage(
         this.offscreenCanvas as unknown as CanvasImageSource,
         0,
-        0
+        0,
       );
     }
   }
@@ -313,7 +312,7 @@ class RenderingEngine {
 const useMatrixAnimation = (
   canvasRef: React.RefObject<HTMLCanvasElement | null>,
   interactionRef: React.RefObject<HTMLDivElement | null>,
-  options: MatrixAnimationOptions
+  options: MatrixAnimationOptions,
 ) => {
   const {
     glitchColor = "#00ffff",
@@ -366,7 +365,7 @@ const useMatrixAnimation = (
         y: mouseEvent.clientY - rect.top,
       };
     },
-    [interactionRef]
+    [interactionRef],
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -388,7 +387,7 @@ const useMatrixAnimation = (
     particlePoolRef.current = new ParticlePool(PARTICLE_POOL_SIZE);
     renderingEngineRef.current = new RenderingEngine(
       context,
-      performanceSettings.renderThrottle
+      performanceSettings.renderThrottle,
     );
 
     const setup = (width: number, height: number) => {
@@ -521,7 +520,7 @@ const LetterGlitch = React.memo<LetterGlitchProps>(
     });
 
     return <canvas ref={canvasRef} className="block w-full h-full" />;
-  }
+  },
 );
 
 LetterGlitch.displayName = "LetterGlitch";
@@ -555,7 +554,7 @@ const GlitchVault = React.memo<GlitchVaultProps>(
         <div className="relative z-20"> {children} </div>
       </div>
     );
-  }
+  },
 );
 GlitchVault.displayName = "GlitchVault";
 export default GlitchVault;

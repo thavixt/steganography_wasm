@@ -1,6 +1,7 @@
 import { Button } from "#components/ui/button";
 import { Textarea } from "#components/ui/textarea";
 import { useRef } from "react";
+import { Link } from "react-router";
 import { useWasm } from "../logic/hooks/useWasm";
 
 export function Index() {
@@ -16,26 +17,55 @@ export function Index() {
 
   return (
     <section className="flex flex-col gap-12">
-      <div>
+      <div className="mx-auto max-w-lg flex flex-col gap-4">
+        <strong>Welcome!</strong>
         <p>
-          Select an image file and <code>decode</code> it, or{" "}
-          <code>encode</code> some other data into it!
+          <em>Steganographix</em> is a site to decode, encode, compare
+          steganographic images, and learn about steganography in general.
+        </p>
+        <p>
+          Learn more about <i>steganography</i> on this site by clicking{" "}
+          <Link to="learn">here</Link>, or more about the techniques in general{" "}
+          <a href="https://wikipedia.org/wiki/Steganography">here</a>.
+        </p>
+        <p>
+          This project has been a long-running hobby project of mine. It's been
+          through many iterations during my learning journey with several
+          technologies:
+          <ol className="list-decimal ml-6 text-sm">
+            <li>a basic Javascript-based React app,</li>
+            <li>the same with Typescript,</li>
+            <li>done with Svelte.js,</li>
+            <li>using Blazor (a C# frontend framework),</li>
+            <li>then Wails (a Go-based desktop framework),</li>
+            <li>
+              and now a React web app written with TypeScript, with WebWorkers
+              using WebAssembly compiled from Go, a PHP-based server, a Postgres
+              database to store some statistics about the images processed, all
+              running in some Docker containers set up on DigitalOcean (soon).
+            </li>
+          </ol>
         </p>
       </div>
       <div className="flex flex-col items-center gap-4">
-        <p>
-          Testing <code>go:wasm</code> with a greeting:
-        </p>
-        <Textarea ref={outputRef} placeholder="..." className="w-92 h-24" />
-        <Button
-          size="lg"
-          disabled={!ready}
-          type="button"
-          className="counter"
-          onClick={wasm_greet}
-        >
-          Greet me from go WASM!
-        </Button>
+        <div className="flex items-center gap-4">
+          <p>
+            Test <code>[go:wasm]</code> with a welcome message:
+          </p>
+          <Button
+            disabled={!ready}
+            type="button"
+            className="counter"
+            onClick={wasm_greet}
+          >
+            Greet me!
+          </Button>
+        </div>
+        <Textarea
+          ref={outputRef}
+          placeholder="Tell me your name in this input field"
+          className="w-92 h-24"
+        />
       </div>
     </section>
   );

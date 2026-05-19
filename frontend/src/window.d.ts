@@ -13,7 +13,7 @@ export interface IGolang {
     width: number,
     height: number,
     type: "text" | "image",
-  ) => Promise<string | ArrayBuffer>;
+  ) => string | ArrayBuffer;
 }
 
 declare class Go {

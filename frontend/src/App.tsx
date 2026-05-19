@@ -18,7 +18,7 @@ export function App() {
       <WasmProvider>
         <WasmStats />
         <BrowserRouter>
-          <main className="relative w-full h-full">
+          <main className="relative w-full h-full min-h-screen">
             <Header />
             <Navbar />
             <section className="p-12 mx-auto max-w-4xl">
@@ -32,5 +32,5 @@ export function App() {
         </BrowserRouter>
       </WasmProvider>
     </StrictMode>
-  )
+  );
 }
