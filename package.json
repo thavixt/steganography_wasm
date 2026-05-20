@@ -18,6 +18,7 @@
   "author": "thavixt",
   "scripts": {
     "build:server": "docker compose up -d server --build",
+    "build:server:composer": "npm run composer --workspace=server",
     "build:db": "docker compose up -d postgres --build",
     "build:adminer": "docker compose up -d adminer --build",
     "build": "docker compose build",
