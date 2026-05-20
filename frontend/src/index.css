@@ -209,3 +209,7 @@
 a[href] {
   @apply font-bold underline underline-offset-2 hover:no-underline text-red-500;
 }
+
+blockquote {
+  @apply bg-slate-200 rounded-md p-2 border-l-4 border-l-red-500;
+}

@@ -2,13 +2,13 @@ import { useNavigate } from "react-router";
 import heroImage from "../assets/hero.png";
 import { useAuth } from "../logic/hooks/useAuth";
 import { Login } from "./Login";
+import { Logout } from "./Logout";
 import { Registration } from "./Registration";
 import { Button } from "./ui/button";
 import GlitchVault from "./ui/glitchvault";
 
 export function Header() {
   const navigate = useNavigate();
-  const { greet, enabled: authEnabled } = useAuth();
 
   return (
     <header className="sticky top-0 h-fit w-full border-b-4 border-red-600 bg-black text-slate-200">
@@ -38,17 +38,34 @@ export function Header() {
               @github
             </small>
           </div>
-          {authEnabled ? (
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => greet("Test user")}>
-                Greet
-              </Button>
-              <Registration />
-              <Login />
-            </div>
-          ) : null}
+          <AuthButtons />
         </div>
       </GlitchVault>
     </header>
+  );
+}
+
+function AuthButtons() {
+  const { auth, enabled, greet } = useAuth();
+  console.log({ auth });
+
+  if (!enabled) {
+    return;
+  }
+
+  return (
+    <div className="flex gap-2">
+      <Button variant="outline" onClick={() => greet("Test user")}>
+        Greet
+      </Button>
+      {auth ? (
+        <Logout />
+      ) : (
+        <>
+          <Registration />
+          <Login />
+        </>
+      )}
+    </div>
   );
 }

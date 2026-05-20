@@ -5,28 +5,25 @@ namespace Steganographix\Routes;
 use lbuchs\WebAuthn\WebAuthn;
 use Steganographix\Utils\Reply;
 
+const RELYING_PARTY_NAME = "WebAuthn Passkey demo";
+const RELYING_PARTY_ID = "localhost";
+const ALLOWED_FORMATS = ["none"];
+const USE_BASE64_URL_ENCODING = true;
 
 class Auth {
   public function __construct()
   {
-    $relyingPartyName = "WebAuthn Passkey demo";
-    $relyingPartyId = "localhost";
-    $allowedFormats = ["none"];
-    $useBase64UrlEncoding = true;
     $webAuthn = new WebAuthn(
-      $relyingPartyName,
-      $relyingPartyId,
-      $allowedFormats,
-      $useBase64UrlEncoding,
+      RELYING_PARTY_NAME,
+      RELYING_PARTY_ID,
+      ALLOWED_FORMATS,
+      USE_BASE64_URL_ENCODING,
     );
 
-    // fetch args
     if (isset($_GET["fetchArgs"])) {
-      if (
-        isset($_GET["userId"]) &&
-        isset($_GET["userName"]) &&
-        isset($_GET["userDisplayName"])
-      ) {
+      if (!isset($_GET["userId"], $_GET["userName"], $_GET["userDisplayName"])) {
+        Reply::error();
+      } else {
         $webAuthn->addRootCertificates("./certs/cacert.pem");
         $args = $webAuthn->getCreateArgs(
           $_GET["userId"],
@@ -37,28 +34,20 @@ class Auth {
           true,
         );
         Reply::success($args);
-      } else {
-        Reply::error();
       }
     }
 
-    // process args
     if (isset($_GET["processArgs"])) {
-      if (
-        isset($_GET["clientDataJSON"]) &&
-        isset($_GET["attestationObject"]) &&
-        isset($_GET["challenge"])
-      ) {
+      if (!isset($_GET["clientDataJSON"], $_GET["attestationObject"], $_GET["challenge"])) {
+        Reply::error();
+      } else {
         $res = $webAuthn->processCreate(
           $_GET["clientDataJSON"],
           $_GET["attestationObject"],
           $_GET["challenge"],
         );
         Reply::success("todo");
-      } else {
-        Reply::error();
       }
     }
   }
 }
-

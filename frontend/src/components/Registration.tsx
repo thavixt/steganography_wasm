@@ -12,26 +12,31 @@ type Inputs = {
 };
 
 export function Registration() {
+  const [open, setOpen] = useState(false);
   const { register: registerAccount } = useAuth();
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit, formState } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     setLoading(true);
     await registerAccount({
-      displayName: data.username,
       id: crypto.randomUUID(),
       name: data.name,
+      username: data.username,
     });
     setLoading(false);
+    setOpen(false);
   };
 
   return (
     <Dialog
+      onOpenChange={setOpen}
+      open={open}
       trigger={<Button variant="secondary">Register</Button>}
       title={"Register an account"}
       description={
         "Please provide your name and a unique username you'd like to use."
       }
+      loading={loading}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-2">

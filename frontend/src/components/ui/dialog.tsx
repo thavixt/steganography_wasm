@@ -5,6 +5,8 @@ import { Button } from "#components/ui/button";
 import { cn } from "#lib/utils";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { cx } from "class-variance-authority";
+import { Spinner } from "./spinner";
 
 function Dialog({
   ...props
@@ -155,6 +157,9 @@ interface DialogTemplateProps extends React.PropsWithChildren {
   description?: React.ReactNode;
   footer?: React.ReactNode;
   disableClose?: boolean;
+  loading?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 function DialogPopup({
@@ -164,11 +169,23 @@ function DialogPopup({
   children,
   footer,
   disableClose,
+  loading,
+  open = false,
+  onOpenChange,
 }: DialogTemplateProps) {
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent showCloseButton={!disableClose}>
+      <DialogContent
+        showCloseButton={!disableClose}
+        onInteractOutside={
+          disableClose || loading
+            ? (e) => {
+              e.preventDefault();
+            }
+            : undefined
+        }
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description ? (
@@ -177,6 +194,14 @@ function DialogPopup({
         </DialogHeader>
         {children}
         {footer ? <DialogFooter>{footer}</DialogFooter> : null}
+        <div
+          className={cx(
+            "absolute h-full w-full flex items-center justify-center bg-gray-600/80 rounded-xl gap-2",
+            { hidden: !loading },
+          )}
+        >
+          <Spinner /> Loading ...
+        </div>
       </DialogContent>
     </Dialog>
   );

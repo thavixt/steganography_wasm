@@ -9,10 +9,11 @@ export function Index() {
   const { ready } = useWasm();
 
   const wasm_greet = () => {
-    const result = window.greet("Peti");
-    if (outputRef.current) {
-      outputRef.current.value = result;
+    if (!outputRef.current) {
+      return;
     }
+    const result = window.greet("Peti");
+    outputRef.current.value = result;
   };
 
   return (
@@ -23,29 +24,75 @@ export function Index() {
           <em>Steganographix</em> is a site to decode, encode, compare
           steganographic images, and learn about steganography in general.
         </p>
-        <p>
-          Learn more about <i>steganography</i> on this site by clicking{" "}
-          <Link to="learn">here</Link>, or more about the techniques in general{" "}
-          <a href="https://wikipedia.org/wiki/Steganography">here</a>.
-        </p>
+        <blockquote>
+          <p>
+            Learn more about steganography on this site by clicking{" "}
+            <Link to="learn">here</Link>, or more about the techniques in
+            general{" "}
+            <a href="https://wikipedia.org/wiki/Steganography" target="_blank">
+              here
+            </a>
+            .
+          </p>
+        </blockquote>
         <p>
           This project has been a long-running hobby project of mine. It's been
           through many iterations during my learning journey with several
           technologies:
-          <ol className="list-decimal ml-6 text-sm">
-            <li>a basic Javascript-based React app,</li>
-            <li>the same with Typescript,</li>
-            <li>done with Svelte.js,</li>
-            <li>using Blazor (a C# frontend framework),</li>
-            <li>then Wails (a Go-based desktop framework),</li>
-            <li>
-              and now a React web app written with TypeScript, with WebWorkers
-              using WebAssembly compiled from Go, a PHP-based server, a Postgres
-              database to store some statistics about the images processed, all
-              running in some Docker containers set up on DigitalOcean (soon).
-            </li>
-          </ol>
         </p>
+        <ol className="list-decimal ml-6">
+          <li>
+            a basic <em>Javascript</em>-based React app,
+          </li>
+          <li>
+            the same with{" "}
+            <a href="https://www.typescriptlang.org/" target="_blank">
+              TypeScript
+            </a>
+            ,
+          </li>
+          <li>
+            done with{" "}
+            <a href="https://svelte.dev/" target="_blank">
+              Svelte.js
+            </a>
+            ,
+          </li>
+          <li>
+            using{" "}
+            <a
+              href="https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor"
+              target="_blank"
+            >
+              Blazor
+            </a>{" "}
+            (a C# desktop app framework),
+          </li>
+          <li>
+            then{" "}
+            <a href="https://wails.io/" target="_blank">
+              Wails
+            </a>{" "}
+            (a Go desktop app framework),
+          </li>
+          <li>
+            and now this - a React SPA written with <b>TypeScript</b>, with{" "}
+            <a
+              href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API"
+              target="_blank"
+            >
+              WebWorkers
+            </a>{" "}
+            using{" "}
+            <a href="https://webassembly.org/" target="_blank">
+              WebAssembly
+            </a>{" "}
+            to process data compiled from <b>Go</b>, a <b>PHP</b>-based server,
+            a <b>Postgres</b> database to store some statistics about the images
+            processed, all running in some Docker containers set up on
+            DigitalOcean (soon).
+          </li>
+        </ol>
       </div>
       <div className="flex flex-col items-center gap-4">
         <div className="flex items-center gap-4">
