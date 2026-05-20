@@ -1,5 +1,5 @@
 -- user table
-CREATE TABLE "user" (
+CREATE TABLE "users" (
   "id" serial NOT NULL,
   PRIMARY KEY ("id"),
   "username" text NOT NULL,
