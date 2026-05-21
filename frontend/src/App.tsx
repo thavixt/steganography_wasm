@@ -14,7 +14,7 @@ import { NotFound } from "./routes/notfound.tsx";
 export function App() {
   return (
     <StrictMode>
-      <Analytics />
+      <Analytics debug={false} />
       <Toaster position="bottom-center" />
       <AuthProvider>
         <WasmProvider>

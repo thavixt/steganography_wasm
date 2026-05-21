@@ -7,7 +7,7 @@ export async function initWasm(): Promise<WebAssembly.Exports> {
       );
     }
 
-    console.log("[go:wasm]", "initializing...");
+    console.debug("[go:wasm]", "initializing...");
     const response = await fetch("/main.wasm");
     console.debug("[go:wasm]", "response", { response });
     const buffer = await response.arrayBuffer();
@@ -21,7 +21,7 @@ export async function initWasm(): Promise<WebAssembly.Exports> {
     wasmExports = result.instance.exports;
     console.debug("[go:wasm]", "wasmExports", { ...wasmExports });
     go.run(result.instance);
-    console.log("[go:wasm]", "initialized.");
+    console.debug("[go:wasm]", "initialized.");
   } catch (error) {
     console.error("Failed to initialize WASM:", error);
     document.getElementById("output")!.textContent =

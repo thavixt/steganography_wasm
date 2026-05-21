@@ -7,7 +7,7 @@ use Steganographix\Utils\Reply as Reply;
 class Greet {
   public function __construct()
   {
-    if (!isset($_GET["welcome"])) {
+    if (!isset($_GET["greet"])) {
       return;
     }
 

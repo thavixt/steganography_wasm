@@ -24,7 +24,7 @@
     "build": "docker compose build",
     "dev": "docker compose up -d",
     "dev:fe": "npm i && rm -rf frontend/node_modules && npm run dev --workspace=frontend",
-    "reset:db": "docker compose stop postgres && rm -rf server/postgres/data",
+    "reset:db": "docker compose stop postgres && rm -rf server/postgres/data && npm run build:db",
     "stop": "docker compose stop"
   }
 }

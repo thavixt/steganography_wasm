@@ -9,13 +9,12 @@ interface AuthFlowResponse<T = string> {
 }
 
 interface UserDetails {
-  id: string;
   name: string;
   username: string;
 }
 
-interface AuthDetails {
-  name: string;
+interface Auth extends UserDetails {
+  loginTime: number;
 }
 
 export interface AuthContextType {
@@ -23,35 +22,38 @@ export interface AuthContextType {
   greet: (name: string) => Promise<string>;
   register: (details: UserDetails) => Promise<void>;
   login: () => Promise<void>;
-  auth: AuthDetails | null;
+  auth: Auth | null;
   logout: () => Promise<void>;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [auth, setAuth] = useState<AuthDetails | null>(null);
+  const [auth, setAuth] = useState<Auth | null>(null);
   const enabled = !!SERVER_URL;
 
   const greet = async (name: string) => {
-    const params = ["welcome", `name=${name}`].join("&");
-    const url = `${SERVER_URL}/?${params}`;
-    const res = await fetch(url);
+    const params = ["greet", `name=${name}`].join("&");
+    const res = await fetch(`${SERVER_URL}/?${params}`);
     const json = (await res.json()) as AuthFlowResponse;
     return json.response;
   };
 
-  const fetchArgs = async (userDetails: UserDetails) => {
-    const { username, id, name } = userDetails;
-    const params = [
-      `userId=${id}`,
-      `userName=${name}`,
-      `userDisplayName=${username}`,
-    ].join("&");
-    const url = `${SERVER_URL}/?fetchArgs&${params}`;
-    const res = await fetch(url);
-    const json = (await res.json()) as AuthFlowResponse<{
+  const fetchArgs = async ({ username, name }: UserDetails) => {
+    const res = await fetch(`${SERVER_URL}/?fetchArgs`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userName: name,
+        userDisplayName: username,
+      }),
+    });
+    const json = await res.json();
+    const {
+      response: { publicKey },
+    } = json as AuthFlowResponse<{
       publicKey: PublicKeyCredentialCreationOptionsJSON;
     }>;
-    return json.response.publicKey;
+    return publicKey;
   };
 
   const createCredentials = async (
@@ -68,45 +70,65 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return credential;
   };
 
-  // TODO
-  const processCredentials = async () => {
-    const clientDataJSON = "";
-    const attestationObject = "";
-    const challenge = "";
-    const params = [
-      `clientDataJSON=${clientDataJSON}`,
-      `attestationObject=${attestationObject}`,
-      `challenge=${challenge}`,
-    ].join("&");
-    const url = `${SERVER_URL}/?processArgs&${params}`;
-    const res = await fetch(url);
-    const json = (await res.json()) as AuthFlowResponse<PublicKeyCredential>;
-    return JSON.stringify(json, null, "\t");
+  const saveRegistration = async (credential: Credential) => {
+    const cred = credential as PublicKeyCredential;
+    const response = cred.response as AuthenticatorAttestationResponse;
+
+    const res = await fetch(`${SERVER_URL}/?processArgs`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      // Convert ArrayBuffers to Base64 so the server can read them
+      body: JSON.stringify({
+        id: cred.id,
+        rawId: btoa(String.fromCharCode(...new Uint8Array(cred.rawId))),
+        type: cred.type,
+        attestationObject: btoa(
+          String.fromCharCode(...new Uint8Array(response.attestationObject)),
+        ),
+        clientDataJSON: btoa(
+          String.fromCharCode(...new Uint8Array(response.clientDataJSON)),
+        ),
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Server failed to verify registration");
+    }
+    return await res.json();
   };
 
-  // TODO
   const register = async (details: UserDetails) => {
-    console.log("start registration");
-    const args = await fetchArgs(details);
-    const registrationCreds = await createCredentials(args);
-    console.log(registrationCreds);
-    setAuth({ name: "PLACEHOLDER" });
-    console.log("successful registration");
-    toast.success("Registration successful");
+    try {
+      const args = await fetchArgs(details);
+      const credential = await createCredentials(args);
+      await saveRegistration(credential);
+      setAuth({ ...details, loginTime: Date.now() });
+      toast.success("Registration successful");
+    } catch (err) {
+      console.error(err);
+      toast.error("Registration failed");
+    }
   };
 
   // TODO
   const login = async () => {
-    const loginCreds = processCredentials();
-    console.log(loginCreds);
-    setAuth({ name: "PLACEHOLDER" });
-    toast.success(`Logged in as ${loginCreds}`);
+    // const loginCreds = processCredentials();
+    // console.log(loginCreds);
+    // setAuth({ name: "PLACEHOLDER" });
+    // toast.success(`Logged in as ${loginCreds}`);uthFlowResponse;
   };
 
   // TODO
   const logout = async () => {
-    setAuth(null);
-    toast.success(`Logged out`);
+    try {
+      const params = ["greet", `name=${name}`].join("&");
+      await fetch(`${SERVER_URL}/?${params}`);
+      setAuth(null);
+      toast.success(`Logged out`);
+    } catch {
+      toast.error(`En error happened while attempting to log out`);
+    }
   };
 
   return (

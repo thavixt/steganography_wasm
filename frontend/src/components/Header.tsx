@@ -47,7 +47,6 @@ export function Header() {
 
 function AuthButtons() {
   const { auth, enabled, greet } = useAuth();
-  console.log({ auth });
 
   if (!enabled) {
     return;
@@ -55,9 +54,11 @@ function AuthButtons() {
 
   return (
     <div className="flex gap-2">
-      <Button variant="outline" onClick={() => greet("Test user")}>
-        Greet
-      </Button>
+      {import.meta.env.DEV ? (
+        <Button variant="outline" onClick={() => greet("Test user")}>
+          [dev] server:greet
+        </Button>
+      ) : null}
       {auth ? (
         <Logout />
       ) : (

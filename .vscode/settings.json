@@ -15,5 +15,11 @@
     "source.fixAll.ts": "always",
     "source.removeUnusedImports": "always",
     "source.sortImports": "always"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[php]": {
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
   }
 }
