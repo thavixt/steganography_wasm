@@ -19,7 +19,6 @@ export function Registration() {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     setLoading(true);
     await registerAccount({
-      id: crypto.randomUUID(),
       name: data.name,
       username: data.username,
     });
