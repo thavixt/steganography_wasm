@@ -22,9 +22,13 @@
     "build:db": "docker compose up -d postgres --build",
     "build:adminer": "docker compose up -d adminer --build",
     "build": "docker compose build",
-    "dev": "docker compose up -d",
+    "dev": "concurrently --names \"docker,vite\" --prefix-colors \"yellow,blue\" \"npm run dev:be\" \"npm run dev:fe\"",
+    "dev:be": "docker compose up",
     "dev:fe": "npm i && rm -rf frontend/node_modules && npm run dev --workspace=frontend",
     "reset:db": "docker compose stop postgres && rm -rf server/postgres/data && npm run build:db",
     "stop": "docker compose stop"
+  },
+  "dependencies": {
+    "concurrently": "^9.2.1"
   }
 }
