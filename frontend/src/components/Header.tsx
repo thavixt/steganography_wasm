@@ -46,7 +46,7 @@ export function Header() {
 }
 
 function AuthButtons() {
-  const { auth, enabled, greet } = useAuth();
+  const { auth, enabled, me } = useAuth();
 
   if (!enabled) {
     return;
@@ -55,8 +55,8 @@ function AuthButtons() {
   return (
     <div className="flex gap-2">
       {import.meta.env.DEV ? (
-        <Button variant="outline" onClick={() => greet("Test user")}>
-          [dev] server:greet
+        <Button variant="outline" onClick={() => me()}>
+          [dev] server:me
         </Button>
       ) : null}
       {auth ? (

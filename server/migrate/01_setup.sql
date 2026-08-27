@@ -4,7 +4,7 @@
 CREATE TABLE "users" (
   "id" serial NOT NULL,
   PRIMARY KEY ("id"),
-  "username" text UNIQUE NOT NULL,
+  "email" text UNIQUE NOT NULL,
   "name" text NOT NULL,
   "created" timestamptz NOT NULL DEFAULT now(),
   "updated" timestamptz NOT NULL DEFAULT now(),
