@@ -13,7 +13,16 @@ export interface IGolang {
     width: number,
     height: number,
     type: "text" | "image",
-  ) => string | ArrayBuffer;
+  ) => string | ArrayBuffer | null;
+  encode: (
+    onProgress: (percent: number) => void,
+    carrierBuffer: ArrayBuffer,
+    width: number,
+    height: number,
+    secretBuffer: ArrayBuffer,
+    secretWidth: number,
+    secretHeight: number,
+  ) => ArrayBuffer | null;
 }
 
 declare class Go {

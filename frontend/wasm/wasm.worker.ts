@@ -1,5 +1,9 @@
 import "../public/wasm_exec";
-import type { StegoImagePayloadData, StegoMethodType } from "../src/types";
+import type {
+  StegoEncodePayloadData,
+  StegoImagePayloadData,
+  StegoMethodType,
+} from "../src/types";
 import type { IGolang } from "../src/window";
 
 declare const Go: IGolang["Go"];
@@ -19,10 +23,10 @@ const readyPromise = init();
 onmessage = async (event: MessageEvent) => {
   await readyPromise;
   const type = event.data.type as StegoMethodType;
-  const payload = event.data.payload as StegoImagePayloadData;
 
   try {
     if (type === "decode-image") {
+      const payload = event.data.payload as StegoImagePayloadData;
       const result = self.decode(
         (percent: number) => {
           postMessage({ type: "progress", payload: percent });
@@ -32,6 +36,12 @@ onmessage = async (event: MessageEvent) => {
         payload.height,
         payload.decodeType,
       );
+
+      if (result === null) {
+        throw new Error(
+          "No hidden data found in this image (or the image was not a valid stego image).",
+        );
+      }
 
       console.log("input", lengthOf(payload.buffer));
       // If the Go WASM module returned a Uint8Array (the PNG file bytes),
@@ -45,7 +55,33 @@ onmessage = async (event: MessageEvent) => {
       // @ts-expect-error this function signature is wrong?!
       postMessage({ type: "success", payload: finalPayload }, transfer);
     } else if (type === "encode-image") {
-      throw new Error(`WIP - not yet implemented method type "${type}"`);
+      const payload = event.data.payload as StegoEncodePayloadData;
+      const result = self.encode(
+        (percent: number) => {
+          postMessage({ type: "progress", payload: percent });
+        },
+        payload.carrierBuffer,
+        payload.width,
+        payload.height,
+        payload.secretBuffer,
+        payload.secretWidth,
+        payload.secretHeight,
+      );
+
+      if (result === null) {
+        throw new Error(
+          "The secret data is too large to fit in the carrier image.",
+        );
+      }
+
+      const isUint8Array = result instanceof Uint8Array;
+      const finalPayload = isUint8Array
+        ? (result as unknown as Uint8Array).buffer
+        : result;
+      const transfer = [finalPayload as ArrayBuffer];
+
+      // @ts-expect-error this function signature is wrong?!
+      postMessage({ type: "success", payload: finalPayload }, transfer);
     } else {
       throw new Error(`Error - unrecognized method type "${type}"`);
     }

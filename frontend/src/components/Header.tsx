@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router";
-import heroImage from "../assets/hero.png";
 import { useAuth } from "../logic/hooks/useAuth";
 import { Login } from "./Login";
 import { Logout } from "./Logout";
 import { Registration } from "./Registration";
 import { Button } from "./ui/button";
 import GlitchVault from "./ui/glitchvault";
+import heroImage from "/hero.png";
 
 export function Header() {
   const navigate = useNavigate();
@@ -15,10 +15,10 @@ export function Header() {
       <GlitchVault
         className="w-full h-full relative z-10"
         glitchColor="#40857e"
-        glitchRadius={120}
+        glitchRadius={100}
       >
         <div className="flex flex-col lg:flex-row items-center justify-between pb-2 px-4">
-          <div className="flex flex-col p-2 md:flex-row gap-2 items-center justify-center">
+          <div className="h-16 flex flex-col p-2 md:flex-row gap-2 items-center justify-center">
             <img
               onClick={() => navigate("/")}
               className="size-8 cursor-pointer transition hover:scale-125"

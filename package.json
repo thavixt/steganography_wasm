@@ -26,9 +26,16 @@
     "dev:be": "docker compose up",
     "dev:fe": "npm i && rm -rf frontend/node_modules && npm run dev --workspace=frontend",
     "reset:db": "docker compose stop postgres && rm -rf server/postgres/data && npm run build:db",
-    "stop": "docker compose stop"
+    "stop": "docker compose stop",
+    "test": "node --test tests/encode-decode.test.js",
+    "test:generate-images": "node tests/generate-test-images.js",
+    "test:investigate:alpha": "node tests/investigate-alpha-region.js",
+    "test:investigate:cross-carrier-text": "node tests/repro-cross-carrier-text.js"
   },
   "dependencies": {
     "concurrently": "^9.2.1"
+  },
+  "devDependencies": {
+    "pngjs": "^7.0.0"
   }
 }

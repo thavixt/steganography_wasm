@@ -17,7 +17,7 @@ export function Navbar() {
 function LinkTo({ to, children }: PropsWithChildren<{ to: string }>) {
   const { pathname } = useLocation();
   if (pathname === to) {
-    return <span>{children}</span>;
+    return <span className="cursor-default">{children}</span>;
   }
   return <Link to={to}>{children}</Link>;
 }

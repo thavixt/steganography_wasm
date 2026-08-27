@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "./logic/context/AuthProvider.tsx";
 import { WasmProvider } from "./logic/context/WasmProvider.tsx";
 import { Decode } from "./routes/decode.tsx";
+import { Encode } from "./routes/encode.tsx";
 import { Index } from "./routes/index.tsx";
 import { NotFound } from "./routes/notfound.tsx";
 
@@ -15,7 +16,7 @@ export function App() {
   return (
     <StrictMode>
       <Analytics debug={false} />
-      <Toaster position="bottom-center" />
+      <Toaster position="top-center" />
       <AuthProvider>
         <WasmProvider>
           <WasmStats />
@@ -27,6 +28,7 @@ export function App() {
                 <Routes>
                   <Route index element={<Index />} />
                   <Route path="/decode" element={<Decode />} />
+                  <Route path="/encode" element={<Encode />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </section>

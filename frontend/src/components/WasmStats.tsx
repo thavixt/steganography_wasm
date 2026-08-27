@@ -12,8 +12,8 @@ export function WasmStats() {
   }
 
   return (
-    <div className="z-100 fixed bottom-0 left-0 m-4 p-2 flex flex-col gap-1 bg-gray-400 drop-shadow-lg drop-shadow-slate-700 rounded-md text-xs opacity-25 hover:opacity-100 min-w-42 w-fit">
-      <b>WASM runtime:</b>
+    <div className="z-100 fixed bottom-0 left-0 m-4 p-2 flex flex-col gap-1 bg-gray-400 drop-shadow-lg drop-shadow-slate-700 rounded-md text-xs opacity-100 min-w-42 w-fit">
+      <b>WASM runtime debug stats:</b>
       <small>(refreshed every {Math.round(refreshIntervalMs / 1000)}s)</small>
       {error ? (
         <div>Instantiation failed.</div>

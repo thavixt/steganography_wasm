@@ -30,3 +30,15 @@ export type StegoImagePayloadDataToWASM = [
   number,
   "text" | "image",
 ];
+
+export interface StegoEncodePayloadData {
+  carrierBuffer: ArrayBuffer;
+  width: number;
+  height: number;
+  secretBuffer: ArrayBuffer;
+  // 0/0 for a text secret; the secret image's own dimensions otherwise, so
+  // decode() can reconstruct it exactly instead of guessing a size from the
+  // carrier's aspect ratio.
+  secretWidth: number;
+  secretHeight: number;
+}
