@@ -1,0 +1,20 @@
+# Dev-mode alternative to Caddyfile: instead of serving a static build,
+# proxies everything to the Vite dev server running on the host (npm run
+# dev:fe), so HMR keeps working while still going through Caddy/HTTPS.
+# Used by the `caddy-dev` service (docker compose --profile dev-proxy up).
+{$CADDY_SITE_ADDRESS:http://localhost} {
+	handle_path /api/* {
+		reverse_proxy server:8000
+	}
+
+	# host.docker.internal resolves to the Windows/Mac host from inside the
+	# container (Docker Desktop provides this natively; the extra_hosts entry
+	# in docker-compose.yml makes it work on Linux too). reverse_proxy
+	# transparently upgrades and forwards Vite's HMR websocket connection -
+	# no special config needed on the Caddy side for that part.
+	handle {
+		reverse_proxy host.docker.internal:4123
+	}
+
+	encode gzip
+}

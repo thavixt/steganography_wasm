@@ -1,5 +1,6 @@
 .env
 .eslintcache
+certs
 .vercel
 *.log
 dist

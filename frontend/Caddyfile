@@ -1,0 +1,26 @@
+# CADDY_SITE_ADDRESS controls both the listen address and TLS behavior:
+#   - "http://localhost" (default, see docker-compose.yml) - plain HTTP,
+#     no certificate involved. For local dev.
+#   - a real domain, e.g. "wasm-steganography.komlosidev.net" - Caddy
+#     automatically provisions and renews HTTPS via Let's Encrypt. For
+#     production - just set the env var, nothing here needs to change.
+{$CADDY_SITE_ADDRESS:http://localhost} {
+	# The PHP backend's own router (server/index.php) dispatches on query
+	# string params against its own root ("/?me", "/?logout", ...), so
+	# stripping the /api prefix here and proxying to the container's root
+	# keeps that working unchanged.
+	handle_path /api/* {
+		reverse_proxy server:8000
+	}
+
+	# Everything else is the built React SPA. try_files falls back to
+	# index.html for any path that isn't an actual static file, so
+	# client-side routing (react-router) works on a hard refresh / direct link.
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+
+	encode gzip
+}

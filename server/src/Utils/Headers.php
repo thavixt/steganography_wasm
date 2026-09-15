@@ -8,7 +8,8 @@ class Headers
   {
     // phpinfo();
     // Specific origin is required when sending credentials/cookies
-    header("Access-Control-Allow-Origin: http://localhost:4123");
+    $address = getenv("CADDY_SITE_ADDRESS");
+    header("Access-Control-Allow-Origin: $address");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: Content-Type, X-Requested-With, Authorization");
     header("Access-Control-Allow-Credentials: true");

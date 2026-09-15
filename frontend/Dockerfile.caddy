@@ -1,0 +1,29 @@
+# Builds the Go/WASM module and the static frontend bundle, then serves it
+# (plus reverse-proxying the PHP API) with Caddy. Separate from Dockerfile,
+# which just runs the Vite dev server for local frontend development.
+
+FROM node:24.12.0 AS build
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends golang-go \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+
+RUN cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" ./public/
+RUN npm run wasm:build
+
+# The built frontend and the PHP API are served from the same origin behind
+# Caddy (see Caddyfile), so this is a same-origin relative path, not a
+# separate host:port like the Vite-dev-server VITE_SERVER_URL is.
+ARG VITE_SERVER_URL=/api
+ENV VITE_SERVER_URL=${VITE_SERVER_URL}
+RUN npm run build
+
+FROM caddy:2-alpine
+
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/dist /srv

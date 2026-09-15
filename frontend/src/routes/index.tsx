@@ -28,9 +28,9 @@ export function Index() {
           <p>
             Learn more about steganography on this site by clicking{" "}
             <Link to="learn">here</Link>, or more about the techniques in
-            general{" "}
+            general on{" "}
             <a href="https://wikipedia.org/wiki/Steganography" target="_blank">
-              here
+              Wikipedia
             </a>
             .
           </p>

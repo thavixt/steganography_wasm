@@ -35,14 +35,12 @@ export function Login() {
       open={open}
       trigger={<Button variant="secondary">Log in</Button>}
       title={"Register an account"}
-      description={
-        "Please provide your name and a unique username you'd like to use."
-      }
+      description={"Please provide the email address for your account."}
       loading={loading}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-2">
-          <Label>Username</Label>
+          <Label>Email</Label>
           <Input
             defaultValue={
               import.meta.env.DEV ? "peter.komlosi@gmail.com" : undefined

@@ -1,5 +1,6 @@
 services:
   server:
+    profiles: [app]
     env_file: .env
     container_name: wasm-server
     build:
@@ -23,6 +24,7 @@ services:
       - postgres
 
   postgres:
+    profiles: [app]
     env_file: .env
     image: postgres:17
     container_name: wasm-postgres
@@ -38,6 +40,7 @@ services:
       - ./server/postgres/backups:/backups
 
   adminer:
+    profiles: [app]
     env_file: .env
     image: adminer
     container_name: wasm-adminer
@@ -45,6 +48,51 @@ services:
       - "8080:${ADMINER_PORT}"
     depends_on:
       - postgres
+
+  caddy:
+    profiles: [prod]
+    env_file: .env
+    container_name: wasm-caddy
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.caddy
+      args:
+        VITE_SERVER_URL: /api
+    ports:
+      - "${CADDY_HTTP_PORT:-8888}:80"
+      - "${CADDY_HTTPS_PORT:-443}:443"
+    environment:
+      - CADDY_SITE_ADDRESS=${CADDY_SITE_ADDRESS:-https://localhost}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - server
+
+  # Alternative to `caddy` for active frontend development: proxies to the
+  # Vite dev server (npm run dev:fe, run on the host) instead of serving a
+  # static build, so HMR keeps working while going through Caddy/HTTPS.
+  # Shares caddy_data/caddy_config with `caddy`, so the same already-trusted
+  # local CA covers both. Binds the same ports as `caddy`, so only run one
+  # of the two at a time: docker compose --profile dev-proxy up caddy-dev
+  caddy-dev:
+    profiles: [dev]
+    env_file: .env
+    container_name: wasm-caddy-dev
+    image: caddy:2-alpine
+    ports:
+      - "${CADDY_HTTP_PORT:-8888}:80"
+      - "${CADDY_HTTPS_PORT:-443}:443"
+    environment:
+      - CADDY_SITE_ADDRESS=${CADDY_SITE_ADDRESS:-https://localhost}
+    volumes:
+      - ./frontend/Caddyfile.dev:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - server
 
   # frontend:
   #   env_file: .env
@@ -73,3 +121,7 @@ services:
   #           - node_modules/
   #       - action: rebuild
   #         path: package.json
+
+volumes:
+  caddy_data:
+  caddy_config:

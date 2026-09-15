@@ -211,5 +211,5 @@ a[href] {
 }
 
 blockquote {
-  @apply bg-slate-200 rounded-md p-2 border-l-4 border-l-red-500;
+  @apply bg-slate-200 rounded-md p-2 border-l-4 border-l-red-500 pl-4 text-sm;
 }

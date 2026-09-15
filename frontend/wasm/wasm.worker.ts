@@ -38,6 +38,8 @@ onmessage = async (event: MessageEvent) => {
       );
 
       if (result === null) {
+        console.error(payload);
+        console.error(result);
         throw new Error(
           "No hidden data found in this image (or the image was not a valid stego image).",
         );
