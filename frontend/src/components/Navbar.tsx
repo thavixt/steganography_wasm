@@ -5,6 +5,7 @@ export function Navbar() {
   return (
     <nav className="w-full h-fit p-4 md:pt-2 md:px-12 justify-between items-center border-b">
       <div className="flex flex-col md:flex-row gap-8 items-center justify-center text-sm">
+        <LinkTo to="/">Home</LinkTo>
         <LinkTo to="/decode">Decode</LinkTo>
         <LinkTo to="/encode">Encode</LinkTo>
         <LinkTo to="/compare">Compare</LinkTo>
