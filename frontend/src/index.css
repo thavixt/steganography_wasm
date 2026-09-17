@@ -203,6 +203,10 @@
   }
   html {
     @apply font-sans;
+    /* Reserves the scrollbar's gutter permanently, so a dialog locking body
+       scroll (removing the scrollbar) never changes the page's width -
+       fixes layout shift on open/close regardless of scroll length. */
+    scrollbar-gutter: stable;
   }
 }
 
