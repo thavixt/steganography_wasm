@@ -33,7 +33,12 @@ class Auth
     $users = $db->query('SELECT * FROM users WHERE email=$1', [$_SESSION["email"]]);
 
     Reply::success([
-      "user_data" => $users[0],
+      "user_data" => array_merge(
+        $users[0],
+        [
+          "lastLogin" => $_SESSION["loginTime"]
+        ]
+      ),
     ]);
   }
 

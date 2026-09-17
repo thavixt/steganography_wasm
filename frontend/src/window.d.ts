@@ -6,7 +6,7 @@ declare global {
 export interface IGolang {
   Go: typeof Go;
   callWasm: () => void;
-  greet: (name: string) => string;
+  greet: (name?: string) => string;
   decode: (
     onProgress: (percent: number) => void,
     buffer: ArrayBuffer,

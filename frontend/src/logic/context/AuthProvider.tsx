@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { AuthContext } from "./AuthContext";
 
@@ -8,59 +8,76 @@ interface AuthFlowResponse<T = string> {
   response: T;
 }
 
-interface UserDetails {
+interface Auth {
   email: string;
   name: string;
-}
-
-interface Auth extends UserDetails {
-  loginTime: number;
+  lastLogin: number;
+  created: string;
 }
 
 export interface AuthContextType {
   enabled: boolean;
-  me: () => Promise<void>;
-  register: (details: UserDetails) => Promise<void>;
-  login: (details: Pick<UserDetails, "email">) => Promise<void>;
+  authChecked: boolean;
+  fetchMe: () => Promise<Auth | null>;
+  register: (details: Pick<Auth, "email" | "name">) => Promise<void>;
+  login: (details: Pick<Auth, "email">) => Promise<void>;
   auth: Auth | null;
   logout: () => Promise<void>;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [auth, setAuth] = useState<Auth | null>(null);
   const enabled = !!SERVER_URL;
+  const [auth, setAuth] = useState<Auth | null>(null);
+  // Nothing to check when auth is disabled entirely.
+  const [authChecked, setAuthChecked] = useState(!enabled);
 
   const fetchMe = async () => {
     const res = await fetch(`${SERVER_URL}/?me`, { credentials: "include" });
     const json = (await res.json()) as AuthFlowResponse<{
-      message: string;
-      user_data: (UserDetails & Record<string, string>) | undefined; // json
+      user_data?: Auth;
     }>;
-    return json.response;
+    const {
+      response: { user_data },
+    } = json;
+    if (!user_data) {
+      return null;
+    }
+    const data: Auth = {
+      email: user_data.email,
+      name: user_data.name,
+      lastLogin: user_data.lastLogin,
+      created: user_data.created,
+    };
+    setAuth((prev) => ({
+      ...prev,
+      ...data,
+    }));
+    return data;
   };
 
-  const me = async () => {
-    const { message, user_data } = await fetchMe();
-    console.log(user_data);
-    toast.success(
-      <div className="flex flex-col gap-2">
-        <span>{message}</span>
-        <span>
-          {user_data ? (
-            <div className="flex flex-col">
-              {Object.entries(user_data).map(([k, v]) => (
-                <span key={k}>
-                  {k}: {v}
-                </span>
-              ))}
-            </div>
-          ) : null}
-        </span>
-      </div>,
-    );
-  };
+  // The PHP session cookie survives a reload on its own (7 day lifetime -
+  // see Session.php); this just brings the React auth state back in sync
+  // with it on mount, instead of defaulting to "logged out" until the next
+  // explicit login() call.
+  useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+    (async () => {
+      try {
+        await fetchMe();
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setAuthChecked(true);
+      }
+    })();
+    // Only ever run once, on mount - re-checking on every render would fight
+    // login()/logout()'s own setAuth calls.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const register = async ({ email, name }: UserDetails) => {
+  const register = async ({ email, name }: Pick<Auth, "email" | "name">) => {
     try {
       const argsRes = await fetch(`${SERVER_URL}/?fetchArgs`, {
         method: "POST",
@@ -112,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error("Server failed to verify registration");
       }
 
-      setAuth({ email, name, loginTime: Date.now() });
+      await fetchMe();
       toast.success("Registration successful");
     } catch (err) {
       console.error(err);
@@ -120,7 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async ({ email }: Pick<UserDetails, "email">) => {
+  const login = async ({ email }: Pick<Auth, "email">) => {
     try {
       const fetchArgsRes = await fetch(`${SERVER_URL}/?loginFetchArgs`, {
         method: "POST",
@@ -162,9 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({
           id: cred.id,
           clientDataJSON: btoa(
-            String.fromCharCode(
-              ...new Uint8Array(credResponse.clientDataJSON),
-            ),
+            String.fromCharCode(...new Uint8Array(credResponse.clientDataJSON)),
           ),
           authenticatorData: btoa(
             String.fromCharCode(
@@ -181,13 +196,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error("Failed to authenticate");
       }
 
-      const { user_data } = await fetchMe();
-      setAuth({
-        email: user_data?.email ?? email,
-        name: user_data?.name ?? "",
-        loginTime: Date.now(),
-      });
-      toast.success("Logged in");
+      const userdata = await fetchMe();
+      if (userdata) {
+        toast.success(`Logged in as ${userdata.name ?? "unknown user"}`);
+      } else {
+        toast.error("Retrieving user data failed");
+      }
     } catch (err) {
       console.error(err);
       toast.error("Login failed");
@@ -198,7 +212,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await fetch(`${SERVER_URL}/?logout`, { credentials: "include" });
       setAuth(null);
-      toast.success(`Logged out`);
+      toast.success(`Successfully logged out`);
     } catch {
       toast.error(`An error happened while attempting to log out`);
     }
@@ -208,7 +222,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         enabled,
-        me,
+        authChecked,
+        fetchMe,
         register,
         login,
         auth,

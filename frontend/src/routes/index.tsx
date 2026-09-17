@@ -2,18 +2,25 @@ import { Button } from "#components/ui/button";
 import { Textarea } from "#components/ui/textarea";
 import { useRef } from "react";
 import { Link } from "react-router";
+import { useAuth } from "../logic/hooks/useAuth";
 import { useWasm } from "../logic/hooks/useWasm";
 
 export function Index() {
   const outputRef = useRef<HTMLTextAreaElement>(null);
   const { ready } = useWasm();
+  const { auth } = useAuth();
 
   const wasm_greet = () => {
     if (!outputRef.current) {
       return;
     }
-    const result = window.greet("Peti");
-    outputRef.current.value = result;
+    if (auth?.name) {
+      const result = window.greet(auth.name);
+      outputRef.current.value = result;
+    } else {
+      const result = window.greet();
+      outputRef.current.value = `${result}\nTry registering and logging in!`;
+    }
   };
 
   return (

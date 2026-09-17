@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../logic/hooks/useAuth";
 import { Login } from "./Login";
 import { Logout } from "./Logout";
 import { Registration } from "./Registration";
 import { Button } from "./ui/button";
+import { Dialog } from "./ui/dialog";
 import GlitchVault from "./ui/glitchvault";
 import heroImage from "/hero.png";
 
@@ -46,7 +48,8 @@ export function Header() {
 }
 
 function AuthButtons() {
-  const { auth, enabled, me } = useAuth();
+  const { auth, authChecked, enabled, fetchMe } = useAuth();
+  const [open, setOpen] = useState(false);
 
   if (!enabled) {
     return;
@@ -54,12 +57,38 @@ function AuthButtons() {
 
   return (
     <div className="flex gap-2">
-      {import.meta.env.DEV ? (
-        <Button variant="outline" onClick={() => me()}>
-          [dev] server:me
-        </Button>
+      {auth?.name ? (
+        <Dialog
+          onOpenChange={setOpen}
+          open={open}
+          trigger={
+            <Button variant="secondary" onClick={() => fetchMe()}>
+              {auth.name}
+            </Button>
+          }
+          title={"My account"}
+        >
+          <div className="flex flex-col gap-2">
+            <div className="grid grid-cols-2">
+              <div>Email address:</div>
+              <div>{auth.email}</div>
+              <div>Display name:</div>
+              <div>{auth.name}</div>
+              <div>Last login at:</div>
+              <div>{new Date(auth.lastLogin).toLocaleString()}</div>
+              <div>Registered at:</div>
+              <div>{new Date(auth.created).toLocaleString()}</div>
+              <div className="col-span-2 mt-2">
+                <small>
+                  WIP: all kinds of statistics from the DB/backend - like # of
+                  pictures processed, bytes extracted/hidden, etc.
+                </small>
+              </div>
+            </div>
+          </div>
+        </Dialog>
       ) : null}
-      {auth ? (
+      {!authChecked ? null : auth ? (
         <Logout />
       ) : (
         <>

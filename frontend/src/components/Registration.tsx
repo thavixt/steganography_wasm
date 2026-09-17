@@ -36,7 +36,7 @@ export function Registration() {
     <Dialog
       onOpenChange={setOpen}
       open={open}
-      trigger={<Button variant="secondary">Register</Button>}
+      trigger={<Button variant="outline">Register</Button>}
       title={"Register an account"}
       description={
         "Please provide your name and a unique username you'd like to use."
