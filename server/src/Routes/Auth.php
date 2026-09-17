@@ -113,7 +113,7 @@ class Auth
 
         unset($_SESSION['temp_email'], $_SESSION['temp_name'], $_SESSION['temp_webauthn_challenge']);
 
-        Reply::success("ok");
+        Reply::success();
       } catch (\Exception $ex) {
         session_destroy();
         var_dump($ex);
@@ -188,7 +188,7 @@ class Auth
 
         unset($_SESSION['temp_login_name'], $_SESSION['temp_login_email'], $_SESSION['webauthn_challenge']);
 
-        Reply::success("ok");
+        Reply::success();
       } catch (\Exception $ex) {
         Reply::error($ex->getMessage());
       }

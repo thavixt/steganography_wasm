@@ -3,7 +3,7 @@ services:
     profiles: [app]
     env_file: .env
     container_name: wasm-server
-    #image: ghcr.io/thavixt/stegangraphy_wasm-server:latest
+    image: ghcr.io/thavixt/stegangraphy_wasm-server:latest
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -54,7 +54,7 @@ services:
     profiles: [prod]
     env_file: .env
     container_name: wasm-caddy
-    #image: ghcr.io/thavixt/stegangraphy_wasm-caddy:latest
+    image: ghcr.io/thavixt/stegangraphy_wasm-caddy:latest
     build:
       context: ./frontend
       dockerfile: Dockerfile.caddy

@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "concurrently --names \"go,ts\" --prefix-colors \"yellow,blue\" \"npm run wasm:watch\" \"vite --host 0.0.0.0\"",
     "dev:app": "vite",
-    "dev:caddy": "cross-env VITE_HMR_PROTOCOL=wss VITE_HMR_HOST=localhost VITE_HMR_CLIENT_PORT=443 npm run dev",
+    "dev:caddy": "cross-env VITE_SERVER_URL=/api VITE_HMR_PROTOCOL=wss VITE_HMR_HOST=localhost VITE_HMR_CLIENT_PORT=443 npm run dev",
     "build": "tsc -b && vite build",
     "lint": "eslint . --cache",
     "tsc": "tsc --project tsconfig.app.json",
