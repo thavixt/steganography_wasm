@@ -27,6 +27,7 @@
     "test:investigate:cross-carrier-text": "node tests/repro-cross-carrier-text.js"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "concurrently": "^9.2.1"
   },
   "devDependencies": {

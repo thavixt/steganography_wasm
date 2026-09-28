@@ -16,7 +16,6 @@ interface Auth {
 }
 
 export interface AuthContextType {
-  enabled: boolean;
   authChecked: boolean;
   fetchMe: () => Promise<Auth | null>;
   register: (details: Pick<Auth, "email" | "name">) => Promise<void>;
@@ -26,10 +25,9 @@ export interface AuthContextType {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const enabled = !!SERVER_URL;
   const [auth, setAuth] = useState<Auth | null>(null);
   // Nothing to check when auth is disabled entirely.
-  const [authChecked, setAuthChecked] = useState(!enabled);
+  const [authChecked, setAuthChecked] = useState(false);
 
   const fetchMe = async () => {
     const res = await fetch(`${SERVER_URL}/auth/me`, {
@@ -62,9 +60,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // with it on mount, instead of defaulting to "logged out" until the next
   // explicit login() call.
   useEffect(() => {
-    if (!enabled) {
-      return;
-    }
     (async () => {
       try {
         await fetchMe();
@@ -76,7 +71,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })();
     // Only ever run once, on mount - re-checking on every render would fight
     // login()/logout()'s own setAuth calls.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const register = async ({ email, name }: Pick<Auth, "email" | "name">) => {
@@ -196,7 +190,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        enabled,
         authChecked,
         fetchMe,
         register,

@@ -48,12 +48,8 @@ export function Header() {
 }
 
 function AuthButtons() {
-  const { auth, authChecked, enabled, fetchMe } = useAuth();
+  const { auth, authChecked, fetchMe } = useAuth();
   const [open, setOpen] = useState(false);
-
-  if (!enabled) {
-    return;
-  }
 
   return (
     <div className="flex gap-2">
