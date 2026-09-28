@@ -70,7 +70,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           ${Buffer.from(credential.publicKey).toString("base64")},
           ${fmt},
           ${credential.counter},
-          ${now},
+          ${now}
         )
       `;
     });
