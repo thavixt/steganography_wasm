@@ -8,6 +8,7 @@ CREATE TABLE "users" (
   "name" text NOT NULL,
   "created" timestamptz NOT NULL DEFAULT now(),
   "updated" timestamptz NOT NULL DEFAULT now(),
+  "last_login" timestamptz,
   "data" json NOT NULL
 );
 

@@ -32,7 +32,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authChecked, setAuthChecked] = useState(!enabled);
 
   const fetchMe = async () => {
-    const res = await fetch(`${SERVER_URL}/?me`, { credentials: "include" });
+    const res = await fetch(`${SERVER_URL}/auth/me`, {
+      credentials: "include",
+    });
     const json = (await res.json()) as AuthFlowResponse<{
       user_data?: Auth;
     }>;
@@ -79,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async ({ email, name }: Pick<Auth, "email" | "name">) => {
     try {
-      const argsRes = await fetch(`${SERVER_URL}/?fetchArgs`, {
+      const argsRes = await fetch(`${SERVER_URL}/auth/register/options`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -105,24 +107,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const cred = credential as PublicKeyCredential;
-      const response = cred.response as AuthenticatorAttestationResponse;
 
-      const res = await fetch(`${SERVER_URL}/?processArgs`, {
+      const res = await fetch(`${SERVER_URL}/auth/register/verify`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        // Convert ArrayBuffers to Base64 so the server can read them
-        body: JSON.stringify({
-          id: cred.id,
-          rawId: btoa(String.fromCharCode(...new Uint8Array(cred.rawId))),
-          type: cred.type,
-          attestationObject: btoa(
-            String.fromCharCode(...new Uint8Array(response.attestationObject)),
-          ),
-          clientDataJSON: btoa(
-            String.fromCharCode(...new Uint8Array(response.clientDataJSON)),
-          ),
-        }),
+        body: JSON.stringify(cred.toJSON()),
       });
 
       if (!res.ok) {
@@ -139,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async ({ email }: Pick<Auth, "email">) => {
     try {
-      const fetchArgsRes = await fetch(`${SERVER_URL}/?loginFetchArgs`, {
+      const fetchArgsRes = await fetch(`${SERVER_URL}/auth/login/options`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -169,27 +159,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const cred = credential as PublicKeyCredential;
-      const credResponse = cred.response as AuthenticatorAssertionResponse;
 
-      const res = await fetch(`${SERVER_URL}/?loginProcessArgs`, {
+      const res = await fetch(`${SERVER_URL}/auth/login/verify`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        // Convert ArrayBuffers to Base64 so the server can read them
-        body: JSON.stringify({
-          id: cred.id,
-          clientDataJSON: btoa(
-            String.fromCharCode(...new Uint8Array(credResponse.clientDataJSON)),
-          ),
-          authenticatorData: btoa(
-            String.fromCharCode(
-              ...new Uint8Array(credResponse.authenticatorData),
-            ),
-          ),
-          signature: btoa(
-            String.fromCharCode(...new Uint8Array(credResponse.signature)),
-          ),
-        }),
+        body: JSON.stringify(cred.toJSON()),
       });
 
       if (!res.ok) {
@@ -210,7 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch(`${SERVER_URL}/?logout`, { credentials: "include" });
+      await fetch(`${SERVER_URL}/auth/logout`, { credentials: "include" });
       setAuth(null);
       toast.success(`Successfully logged out`);
     } catch {

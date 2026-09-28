@@ -1,5 +1,5 @@
 services:
-  server:
+  backend:
     profiles: [app]
     env_file: .env
     container_name: wasm-server

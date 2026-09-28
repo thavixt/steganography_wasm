@@ -1,5 +1,5 @@
 {
-  "name": "steganography_wasm",
+  "name": "steganography-wasm",
   "workspaces": [
     "frontend",
     "server"
