@@ -38,10 +38,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     const { credential, fmt } = verification.registrationInfo;
 
+    const now = Date.now();
     await sql.begin(async (tx) => {
       const inserted = await tx<{ id: number }[]>`
-        INSERT INTO users (email, name, data)
-        VALUES (${pendingEmail}, ${pendingName}, '{}'::json)
+        INSERT INTO users (email, name, created, updated, data)
+        VALUES (${pendingEmail}, ${pendingName}, ${now}, ${now}, '{}'::json)
         ON CONFLICT (email) DO NOTHING
         RETURNING id
       `;
@@ -55,13 +56,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       await tx`
         INSERT INTO credentials
-          (user_id, credential_id, public_key, attestation_format, sign_count)
+          (user_id, credential_id, public_key, attestation_format, sign_count, created_at)
         VALUES (
           ${userId},
           ${credential.id},
           ${Buffer.from(credential.publicKey).toString("base64")},
           ${fmt},
-          ${credential.counter}
+          ${credential.counter},
+          ${now},
         )
       `;
 
