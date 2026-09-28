@@ -94,10 +94,10 @@ export function Index() {
             <a href="https://webassembly.org/" target="_blank">
               WebAssembly
             </a>{" "}
-            to process data compiled from <b>Go</b>, a <b>PHP</b>-based server,
-            a <b>Postgres</b> database to store some statistics about the images
-            processed, all running in some Docker containers set up on
-            DigitalOcean (soon).
+            to process data compiled from <b>Go</b>, a <b>Node.js</b>{" "}
+            (Typescript) server, a <b>Supabase/Postgres</b> database to store
+            some statistics about the images processed, all running in some
+            Docker containers hosted on Vercel.
           </li>
         </ol>
       </div>
