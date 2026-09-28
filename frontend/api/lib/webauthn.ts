@@ -5,6 +5,5 @@ export const RP_ID = process.env.WEBAUTHN_RP_ID ?? "localhost";
 
 export const EXPECTED_ORIGINS = [
   process.env.PUBLIC_SITE_ORIGIN,
-  "http://localhost:3000", // `vercel dev`'s default port
-]
-  .filter((value): value is string => Boolean(value));
+  "http://localhost:3001", // `vercel dev`'s default port
+].filter((value): value is string => Boolean(value));

@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { applyCors } from "../_lib/cors.js";
-import { sql, type UserRow } from "../_lib/db.js";
-import { getSession } from "../_lib/session.js";
+import { applyCors } from "../lib/cors.js";
+import { sql, type UserRow } from "../lib/db.js";
+import { getSession } from "../lib/session.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (applyCors(req, res)) return;

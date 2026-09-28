@@ -1,9 +1,9 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { generateAuthenticationOptions } from "@simplewebauthn/server";
-import { applyCors } from "../../_lib/cors.js";
-import { sql, type CredentialRow, type UserRow } from "../../_lib/db.js";
-import { getSession } from "../../_lib/session.js";
-import { RP_ID } from "../../_lib/webauthn.js";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { applyCors } from "../../lib/cors.js";
+import { sql, type CredentialRow, type UserRow } from "../../lib/db.js";
+import { getSession } from "../../lib/session.js";
+import { RP_ID } from "../../lib/webauthn.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (applyCors(req, res)) return;
@@ -18,7 +18,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const users = await sql<UserRow[]>`SELECT * FROM users WHERE email = ${email}`;
+  const users = await sql<
+    UserRow[]
+  >`SELECT * FROM users WHERE email = ${email}`;
   const user = users[0];
   if (!user) {
     res.status(404).json({ error: "User not found" });

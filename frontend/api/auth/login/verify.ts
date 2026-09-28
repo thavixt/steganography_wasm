@@ -1,13 +1,13 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   verifyAuthenticationResponse,
   type AuthenticationResponseJSON,
   type WebAuthnCredential,
 } from "@simplewebauthn/server";
-import { applyCors } from "../../_lib/cors.js";
-import { sql, type CredentialRow } from "../../_lib/db.js";
-import { clearPendingChallenge, getSession } from "../../_lib/session.js";
-import { EXPECTED_ORIGINS, RP_ID } from "../../_lib/webauthn.js";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { applyCors } from "../../lib/cors.js";
+import { sql, type CredentialRow } from "../../lib/db.js";
+import { clearPendingChallenge, getSession } from "../../lib/session.js";
+import { EXPECTED_ORIGINS, RP_ID } from "../../lib/webauthn.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (applyCors(req, res)) return;
@@ -19,7 +19,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const session = await getSession(req, res);
   const { pendingChallenge, pendingEmail, pendingName } = session;
   if (!pendingChallenge || !pendingEmail) {
-    res.status(400).json({ error: "Authentication challenge not found in session" });
+    res
+      .status(400)
+      .json({ error: "Authentication challenge not found in session" });
     return;
   }
 

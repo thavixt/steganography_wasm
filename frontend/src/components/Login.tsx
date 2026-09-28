@@ -34,8 +34,8 @@ export function Login() {
       onOpenChange={setOpen}
       open={open}
       trigger={<Button variant="secondary">Log in</Button>}
-      title={"Register an account"}
-      description={"Please provide the email address for your account."}
+      title={"Login"}
+      description={"Please provide the email address you registerd with."}
       loading={loading}
     >
       <form onSubmit={handleSubmit(onSubmit)}>

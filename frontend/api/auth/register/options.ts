@@ -1,9 +1,9 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { generateRegistrationOptions } from "@simplewebauthn/server";
-import { applyCors } from "../../_lib/cors.js";
-import { sql } from "../../_lib/db.js";
-import { getSession } from "../../_lib/session.js";
-import { RP_ID } from "../../_lib/webauthn.js";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { applyCors } from "../../lib/cors.js";
+import { sql } from "../../lib/db.js";
+import { getSession } from "../../lib/session.js";
+import { RP_ID } from "../../lib/webauthn.js";
 
 const RP_NAME = "WASM Steganograpy by thavixt@github";
 

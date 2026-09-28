@@ -1,12 +1,12 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   verifyRegistrationResponse,
   type RegistrationResponseJSON,
 } from "@simplewebauthn/server";
-import { applyCors } from "../../_lib/cors.js";
-import { sql } from "../../_lib/db.js";
-import { clearPendingChallenge, getSession } from "../../_lib/session.js";
-import { EXPECTED_ORIGINS, RP_ID } from "../../_lib/webauthn.js";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { applyCors } from "../../lib/cors.js";
+import { sql } from "../../lib/db.js";
+import { clearPendingChallenge, getSession } from "../../lib/session.js";
+import { EXPECTED_ORIGINS, RP_ID } from "../../lib/webauthn.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (applyCors(req, res)) return;
