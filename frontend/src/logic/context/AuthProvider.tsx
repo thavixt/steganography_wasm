@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { AuthContext } from "./AuthContext";
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? "/api";
 
 interface AuthFlowResponse<T = string> {
   response: T;
