@@ -41,8 +41,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const now = Date.now();
     await sql.begin(async (tx) => {
       const inserted = await tx<{ id: number }[]>`
-        INSERT INTO users (email, name, created, updated, data)
-        VALUES (${pendingEmail}, ${pendingName}, ${now}, ${now}, '{}'::json)
+        INSERT INTO users (email, name, created, updated, last_login, data)
+        VALUES (
+          ${pendingEmail},
+          ${pendingName},
+          ${now},
+          ${now},
+          ${now},
+          '{}'::json
+        )
         ON CONFLICT (email) DO NOTHING
         RETURNING id
       `;
@@ -66,8 +73,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           ${now},
         )
       `;
-
-      await tx`UPDATE users SET last_login = now() WHERE id = ${userId}`;
     });
 
     // Finalize login: promote the pending ceremony into the real session.
